@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "jest": "^27.3.1",
+    "node.js": "^0.0.1-security"
+  }
+}
