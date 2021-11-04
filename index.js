@@ -9,7 +9,7 @@ const fs = require('fs');
 const OUTPUT_DIR = path.resolve(__dirname, "output");
 const outputPath =path.join(OUTPUT_DIR, "index.html");
 
-const team = [];
+const teamMembers = [];
 const choiceArr = [];
 
 function teamMenu() {
@@ -72,6 +72,81 @@ function teamMenu() {
             teamMembers.push(manager);
             idArray.push(answers.managerId);
             createTeam();
-        })
+        });
+    }
+
+    function createTeam() {
+        inquirer.prompt([
+            {
+                type: "list",
+                name: "memberChoice",
+                message: "Who would you like to add?",
+                choices: [
+                    "Engineer",
+                    "Intern",
+                    "None"
+                ]
+            }
+        ]).then(userChoice => {
+            switch (userChoice.memberChoice) {
+                case "Engineer": addEngineer();
+                break;
+                case "Intern": addIntern();
+                break;
+                default: makeTeam();
+            }
+        });
+    }
+    function addEngineer() {
+        inquirer.prompt([
+            {
+                type: "input",
+                name: "engineerId",
+                message: "What is the Engineer's ID?",
+                validate: answer => {
+                    const pass = answer.match(
+                        /^[1-9]\d*$/
+                    );
+                    if (pass) {
+                        if (choiceArr.includes(answer)) {
+                            return "Unavailable: Please choose another ID!"
+                        }else {
+                            return true;
+                        }
+                    }
+                    return "Please enter a positive number!";
+                }
+            },
+            {
+                type: "input",
+                name: "engineerEmail",
+                message: "What is the engineer's email",
+                validate: answer => {
+                    const pass =answer.match(
+                        /\S+@\S+\.\S+/
+                    );
+                    if (pass) {
+                        return true;
+                    }
+                    return "Please enter a vaild email address";
+                }
+            },
+            {
+                type: "input",
+                name: "engineerGithub",
+                message: "What is the engineer's Github username",
+                validate: answer => {
+                    if (answer !== "") {
+                        return true;
+                    }
+                    return "Pleas enter a Github Username";
+                }
+            }
+        ]).then(answers => {
+            const engineer = new Engineer(answers.engineerName, answers.engineerId, answers.engineerEmail, answers.engineerGithub);
+            teamMembers.push(engineer);
+            choiceArr.push(answers.engineerId);
+            createTeam();
+        });
     }
 }
